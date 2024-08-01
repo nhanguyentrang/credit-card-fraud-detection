@@ -115,8 +115,51 @@ imbalance = fraud_count / legit_count * 100
 print('Fraud-to-non-fraud ratio = %.2f%%' % imbalance)
 ```
 
+<img width="598" alt="image" src="https://github.com/user-attachments/assets/466baa5e-956c-4bed-9cbe-24b0f1aeba78">
+
+Fraud-to-non-fraud ratio = 0.17%
 
 
+## 2.3. Multicollinearity
+
+```
+## Exclude Class feature
+features = creditcard.drop(columns = ['Class'])
+
+## Correlation coefficient matrix
+corr_mat = features.corr()
+
+## P-values calculation
+# initialise p-value matrix
+p_val = pd.DataFrame(np.zeros((features.shape[1], features.shape[1])),
+                     columns = features.columns, index = features.columns)
+# calculate p-values
+for row in features.columns:
+    for col in features.columns:
+        if row != col:
+            p_val.loc[row, col] = pearsonr(features[row], features[col])[1]
+        else:
+            p_val.loc[row, col] = np.nan
+
+## Hide upper triangle for cleaner visualisation
+mask = np.triu(np.ones_like(corr_mat, dtype = bool))
+
+## Heatmap
+plt.figure(figsize = (16, 14))
+sns.heatmap(corr_mat, annot = False, fmt = ".2f", mask = mask, cmap = 'coolwarm',
+            center = 0, cbar_kws = {'label': 'Correlation coefficient'})
+
+## Add *** for significant p-values (p < 0.05) in lower triangle
+for i in range(len(corr_mat.columns)):
+    for j in range(i):
+        if p_val.iloc[i, j] < 0.05:
+            plt.text(j+0.5, i+0.5, '***', ha = 'center', va = 'center',
+                     color = 'black', fontsize = 12)
+
+## Map visualisation
+plt.title('Correlation Matrix with Significance at 5%')
+plt.show()
+```
 
 
 
