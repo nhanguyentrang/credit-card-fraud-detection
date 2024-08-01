@@ -1,9 +1,9 @@
 # Credit card fraud detection - Code execution
 The following displays codes and results for data inspection, processing, model construction and evaluation. All the codes are written in Python language, and are executed in Jupyter Notebook.
 
-For complete Python file, refer to *Credit Card Fraud Detection.ipynb*.
+For the complete Python file, refer to *Credit Card Fraud Detection.ipynb*.
 
-For the details of the dataset, refer to [this link](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud?resource=download).
+For the details and download of the *creditcard.csv* dataset, refer to [this Kaggle page](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud?resource=download).
 
 ```
 ## Prevent warning messages from displaying with code results
