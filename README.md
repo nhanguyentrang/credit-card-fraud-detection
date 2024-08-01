@@ -30,6 +30,53 @@ creditcard
 |284805|  172788.0| -0.240440|  0.530483|  0.702510|  0.689799| ... |  0.546668|  0.108821|  0.104533|   10.00|      0|
 |284806|  172792.0| -0.533413| -0.189733|  0.703337| -0.506271| ... | -0.818267| -0.002415|  0.013649|  217.00|      0|
 
+284807 rows × 31 columns
+
+
+# 2. Data inspection
+
+```
+import matplotlib.pyplot as plt   # for plotting
+import seaborn as sns             # for plotting
+import numpy as np                # for array processing & scientific calculations
+from scipy.stats import pearsonr  # for computing p-values
+```
+
+
+## 2.1. Data distribution
+### a. Plot PCA features
+
+```
+## Create a 4x7 grid of subplots for 28 features (excluding Time, Amount and Class)
+fig, axes = plt.subplots(4, 7, figsize = (20, 15))
+axes = axes.flatten()  # convert 2D array into 1D array for easier iteration
+
+## List of 28 features to plot
+features = [col for col in creditcard.columns if col not in ['Time', 'Amount', 'Class']]
+
+## Plot the distribution of 28 features
+for i, ax in enumerate(axes):
+    if i < len(features):
+        sns.boxplot(x = creditcard[features[i]], ax = ax)
+        ax.set_title(features[i])
+    else:
+        ax.axis('off')  # hide unused subplots
+
+## Show plots
+plt.tight_layout()
+plt.show()
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
