@@ -5,8 +5,6 @@ For complete Python file, refer to *Credit Card Fraud Detection.ipynb*.
 
 For the details of the dataset, refer to [this link](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud?resource=download).
 
-############################################################
-
 ```
 ## Prevent warning messages from displaying with code results
 import warnings
