@@ -392,6 +392,7 @@ print('Resampled dataset shape:', Counter(y_res))   # resampled dataset
 <img width="622" alt="image" src="https://github.com/user-attachments/assets/efa327eb-9bf7-47b4-b482-744ac0908430">
 
 *Original dataset shape: Counter({0: 227448, 1: 397})*
+
 *Resampled dataset shape: Counter({0: 227426, 1: 397})*
 
 
@@ -432,6 +433,7 @@ print(grid_search.best_params_)
 ```
 
 *Best AUPRC score = 0.84 achieved at the following parameters:*
+
 *{'max_depth': 64, 'min_samples_leaf': 3}*
 
 
@@ -472,13 +474,43 @@ auprc_model1 = average_precision_score(y_test, y_pred_prob_model1)
 print('AUPRC score = %.2f' % auprc_model1)
 ```
 
+<img width="516" alt="image" src="https://github.com/user-attachments/assets/7caf3012-e2e5-4bf4-947e-2c993edcfa23">
+
+*Fraudulent accuracy = 76.84%*
+
+*Genuine accuracy = 99.98%*
+
+*AUPRC score = 0.85*
 
 
+## 3.6. Model 2: K-means + XGBoost
+### a. K-means
+#### Elbow method to find a range of possible K
 
+```
+from sklearn.cluster import KMeans  # for K-means
+```
 
+```
+## Range of K values
+k_val = range(2, 101)
 
+## Initialise list of inertias
+inertias = []
 
+## Compute inertia for different values of K
+for k in k_val:
+    kmeans = KMeans(n_clusters = k, n_init = 10, random_state = 112)
+    kmeans.fit(X_train_scaled)
+    inertias.append(kmeans.inertia_)
 
+## Elbow graph
+plt.plot(k_val, inertias, 'bo-')
+plt.xlabel('Number of Clusters (K)')
+plt.ylabel('Inertia')
+plt.title('Elbow Method For Optimal K')
+plt.show()
+```
 
 
 
