@@ -89,9 +89,31 @@ plt.tight_layout()
 plt.show()
 ```
 
+<img width="1121" alt="image" src="https://github.com/user-attachments/assets/c488552a-c12a-454b-b729-51fe03aaecd6">
 
 
+## 2.2. Imbalance ratio
 
+```
+## Extract fraud and non-fraud count
+fraud_count = np.sum(creditcard['Class'] == 1)
+legit_count = np.sum(creditcard['Class'] == 0)
+
+## Data preparation for plotting
+trans_types = ['Fraudulent', 'Legitimate']
+counts = [fraud_count, legit_count]
+
+## Visualisation
+plt.bar(trans_types, counts, color = ['red', 'blue'])
+plt.xlabel('Transaction Type')
+plt.ylabel('Count')
+plt.title('Fraudulent vs Legitimate Transactions')
+plt.show()
+
+## Imbalance ratio calculation
+imbalance = fraud_count / legit_count * 100
+print('Fraud-to-non-fraud ratio = %.2f%%' % imbalance)
+```
 
 
 
