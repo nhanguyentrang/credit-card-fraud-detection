@@ -512,6 +512,72 @@ plt.title('Elbow Method For Optimal K')
 plt.show()
 ```
 
+<img width="556" alt="image" src="https://github.com/user-attachments/assets/dac865b2-7699-46fc-a6a3-c3b094dc7639">
+
+Optimal range of K is between 20 and 40.
+
+
+#### Silhouette score to find best K
+
+```
+from sklearn.metrics import silhouette_score  # for computing Silhouette score
+```
+
+```
+## Range of K values
+k_val = range(20, 41, 2)
+
+## Initialise list of silhouette scores
+sil_scores = []
+
+## Compute silhouette scores for different values of K
+for k in k_val:
+    kmeans = KMeans(n_clusters = k, n_init = 10, random_state = 112)
+    kmeans.fit(X_train_scaled)
+    score = silhouette_score(X_train_scaled, kmeans.labels_)
+    sil_scores.append(score)
+    print('Silhouette score = %.2f' % score, 'at K =', k)
+
+## Silhouette scores plot
+plt.plot(k_val, sil_scores, 'bo-')
+plt.xlabel('Number of Clusters (K)')
+plt.ylabel('Silhouette Score')
+plt.title('Silhouette Score for Different Values of K')
+plt.show()
+
+## Best K value
+best_k = k_val[np.argmax(sil_scores)]
+print('Best K value =', best_k, 'achieved at the highest Silhouette score of %.2f' % max(sil_scores))
+```
+
+*Silhouette score = 0.08 at K = 20*
+
+*Silhouette score = 0.08 at K = 22*
+
+*Silhouette score = 0.08 at K = 24*
+
+*Silhouette score = 0.07 at K = 26*
+
+*Silhouette score = 0.07 at K = 28*
+
+*Silhouette score = 0.09 at K = 30*
+
+*Silhouette score = 0.08 at K = 32*
+
+*Silhouette score = 0.08 at K = 34*
+
+*Silhouette score = 0.08 at K = 36*
+
+*Silhouette score = 0.08 at K = 38*
+
+*Silhouette score = 0.08 at K = 40*
+
+
+
+
+
+
+
 
 
 
