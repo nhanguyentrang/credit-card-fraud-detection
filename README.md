@@ -572,15 +572,111 @@ print('Best K value =', best_k, 'achieved at the highest Silhouette score of %.2
 
 *Silhouette score = 0.08 at K = 40*
 
+<img width="577" alt="image" src="https://github.com/user-attachments/assets/2684afdd-e24e-4049-9fc3-9fc543bf072f">
+
+*Best K value = 30 achieved at the highest Silhouette score of 0.09*
 
 
+### b. Clustering & XGBoost
+#### Cross-validation to find optimal model
+
+```
+from sklearn.base import BaseEstimator, TransformerMixin  # for building K-means transformation function
+from xgboost import XGBClassifier                         # for XGBoost
+from sklearn.pipeline import Pipeline                     # for stacking multiple functions together
+```
+
+```
+## Negative-to-positive class ratio
+neg_pos_ratio = np.sum(y_train == 0) / np.sum(y_train == 1)
+
+## Define function to integrate K-means clustering
+class KMeansTransformer(BaseEstimator, TransformerMixin):
+    # define parameters
+    def __init__(self, n_clusters, n_init, random_state):
+        self.n_clusters = n_clusters
+        self.n_init = n_init
+        self.random_state = random_state
+    # define and fit K-means model to cluster
+    def fit(self, X, y = None):
+        self.kmeans = KMeans(n_clusters = self.n_clusters, n_init = self.n_init, random_state = self.random_state)
+        self.kmeans.fit(X)
+        return self
+    # integrate clusters
+    def transform(self, X, y = None):
+        clusters = self.kmeans.predict(X)
+        X_new = pd.DataFrame(X).copy()
+        X_new['cluster'] = clusters
+        return X_new
+
+## Define pipeline
+pipeline = Pipeline([
+    ("kmeans", KMeansTransformer(n_clusters = best_k, n_init = 10, random_state = 112)),
+    ("xgb", XGBClassifier(scale_pos_weight = neg_pos_ratio, random_state = 112))
+])
+
+## Define parameter grid for GridSearchCV
+param_grid = {
+    'xgb__max_depth': 2**np.array(range(1, 11), dtype = 'int'),
+    'xgb__gamma': [0, 0.1],
+    'xgb__reg_alpha': [0, 0.1],
+    'xgb__reg_lambda': [0, 0.5]
+}
+
+## Ensure each fold has similar class distribution
+cv = StratifiedKFold(n_splits = 3)
+
+## Define custom scoring for AUPRC
+auprc_scorer = make_scorer(average_precision_score, needs_proba = True)
+
+## Create GridSearchCV object
+grid_search = GridSearchCV(pipeline, param_grid, cv = cv, scoring = auprc_scorer, n_jobs = -1)
+
+## Perform grid search
+grid_search.fit(X_train_scaled, y_train)
+
+## Print best score and corresponding parameters
+print('Best AUPRC score = %.2f' % grid_search.best_score_, 'achieved at the following parameters:')
+print(grid_search.best_params_)
+```
+
+*Best AUPRC score = 0.85 achieved at the following parameters:*
+
+*{'xgb__gamma': 0, 'xgb__max_depth': 8, 'xgb__reg_alpha': 0.1, 'xgb__reg_lambda': 0}*
 
 
+#### Model training
+
+```
+best_pipeline = grid_search.best_estimator_  # model with best parameters
+best_pipeline.fit(X_train_scaled, y_train)
+```
 
 
+#### Model testing
 
+```
+## Prediction
+y_pred = best_pipeline.predict(X_test_scaled)
 
+## Confusion matrix
+con_mat = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix = con_mat)
+disp.plot(cmap = plt.cm.Blues)
+plt.title('Confusion Matrix of Model 2')
+plt.show()
 
+## Categorical accuracy
+fraud_acc_model2 = con_mat[1, 1] / np.sum(con_mat, axis = 1)[1] * 100
+legit_acc_model2 = con_mat[0, 0] / np.sum(con_mat, axis = 1)[0] * 100
+print('Fraudulent accuracy = %.2f%%' % fraud_acc_model2)
+print('Genuine accuracy = %.2f%%' % legit_acc_model2)
+
+## AUPRC score
+y_pred_prob_model2 = best_pipeline.predict_proba(X_test_scaled)[:, 1]  # probability for test set
+auprc_model2 = average_precision_score(y_test, y_pred_prob_model2)
+print('AUPRC score = %.2f' % auprc_model2)
+```
 
 
 
