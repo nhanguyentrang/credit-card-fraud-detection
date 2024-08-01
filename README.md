@@ -67,6 +67,8 @@ plt.tight_layout()
 plt.show()
 ```
 
+<img width="951" alt="image" src="https://github.com/user-attachments/assets/79e63b0c-f6bc-4d23-b3c6-7ce739d2f291">
+
 
 
 
