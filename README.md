@@ -175,6 +175,18 @@ plt.title('Time Distribution')
 plt.show()
 ```
 
+<img width="584" alt="image" src="https://github.com/user-attachments/assets/cc7c13e5-5e68-49e1-9f74-01760e19338a">
+
+
+## 2.5. Distribution of Time based on Class
+
+```
+sns.boxplot(x = 'Class', y = 'Time', data = creditcard, palette = ['blue', 'red'])
+plt.title('Time Distribution based on Transaction Type')
+plt.xlabel('Non-fraud (0) vs Fraud (1)')
+plt.ylabel('Time (in seconds)')
+plt.show()
+```
 
 
 
