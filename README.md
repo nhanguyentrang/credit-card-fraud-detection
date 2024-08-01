@@ -161,6 +161,37 @@ plt.title('Correlation Matrix with Significance at 5%')
 plt.show()
 ```
 
+<img width="558" alt="image" src="https://github.com/user-attachments/assets/61b89500-48ff-48e6-80a7-77041f37bdfe">
+
+
+## 2.4. Time distribution
+
+```
+sns.histplot(creditcard['Time'], bins = 30, kde = True,
+             color = 'blue', edgecolor = 'black', stat = 'count')
+plt.xlabel('Time (in seconds)')
+plt.ylabel('Number of transactions')
+plt.title('Time Distribution')
+plt.show()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
