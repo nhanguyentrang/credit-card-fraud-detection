@@ -888,8 +888,55 @@ auprc_model3 = average_precision_score(y_test, y_pred_prob_model3)
 print('AUPRC score = %.2f' % auprc_model3)
 ```
 
+<img width="514" alt="image" src="https://github.com/user-attachments/assets/132f4024-0982-4ba1-a154-9e199e755022">
+
+*Fraudulent accuracy = 83.16%*
+
+*Genuine accuracy = 99.95%*
+
+*AUPRC score = 0.85*
 
 
+
+# 4. Model comparison
+## 4.1. Categorical accuracy
+
+```
+## Prepare plot's features
+fraud_accuracies = [fraud_acc_model1, fraud_acc_model2, fraud_acc_model3]
+legit_accuracies = [legit_acc_model1, legit_acc_model2, legit_acc_model3]
+models = ['Model 1', 'Model 2', 'Model 3']
+pos = np.arange(len(models))  # positions for the groups
+width = 0.35                  # width of the bars
+
+## Create supblots
+fig, ax = plt.subplots()
+
+## Plot the bars
+bars1 = ax.bar(pos - width/2, fraud_accuracies, width, color = 'red', label = 'Fraudulent Accuracy')
+bars2 = ax.bar(pos + width/2, legit_accuracies, width, color = 'blue', label = 'Legitimate Accuracy')
+
+## Add labels, title, and custom x-axis tick labels
+ax.set_ylabel('Accuracy (%)')
+ax.set_title('Accuracy of Fraudulent and Legitimate Transactions by Model')
+ax.set_xticks(pos)
+ax.set_xticklabels(models)
+ax.legend(loc = 'lower left')
+
+## Add bar labels
+def add_labels(bars):
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate('%.2f' % height, xy = (bar.get_x() + bar.get_width() / 2, height),
+                    xytext = (0, 3),  # 3 points vertical offset
+                    textcoords = "offset points", ha = 'center', va = 'bottom')
+add_labels(bars1)
+add_labels(bars2)
+
+## Display bar chart
+plt.tight_layout()
+plt.show()
+```
 
 
 
