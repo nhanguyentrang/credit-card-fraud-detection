@@ -12,6 +12,9 @@ warnings.simplefilter(action = 'ignore')
 
 ```
 import pandas as pd  # for working with dataframe
+```
+
+```
 creditcard = pd.read_csv('creditcard.csv')
 creditcard
 ```
@@ -201,7 +204,31 @@ plt.title('Transaction Amount Distribution')
 plt.show()
 ```
 
+<img width="559" alt="image" src="https://github.com/user-attachments/assets/10c12927-5172-45e7-ad53-853fb2340419">
 
+
+## 2.7. Distribution of Amount based on Class
+
+```
+## Create a 1x2 grid of subplots
+fig, axes = plt.subplots(1, 2, figsize = (16, 6))
+
+## Without outliers
+sns.boxplot(ax = axes[0], x = 'Class', y = 'Amount', data = creditcard, palette = ['blue', 'red'], showfliers = False)
+axes[0].set_title('Amount Distribution based on Transaction Type (Without Outliers)')
+axes[0].set_xlabel('Non-fraud (0) vs Fraud (1)')
+axes[0].set_ylabel('Transaction Amount (in Euro)')
+
+## With outliers
+sns.boxplot(ax = axes[1], x = 'Class', y = 'Amount', data = creditcard, palette = ['blue', 'red'])
+axes[1].set_title('Amount Distribution based on Transaction Type (With Outliers)')
+axes[1].set_xlabel('Non-fraud (0) vs Fraud (1)')
+axes[1].set_ylabel('Transaction Amount (in Euro)')
+
+## Show plots
+plt.tight_layout()
+plt.show()
+```
 
 
 
