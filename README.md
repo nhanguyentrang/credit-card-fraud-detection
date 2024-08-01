@@ -965,3 +965,6 @@ plt.legend()
 plt.show()
 ```
 
+<p align="center">
+<img width="556" alt="image" src="https://github.com/user-attachments/assets/5ed12a36-c591-431a-a087-162d412fafc4">
+<\p>
