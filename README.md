@@ -347,7 +347,7 @@ X_res, y_res = tomeklink.fit_resample(X_train_scaled, y_train)
 ```
 
 
-## Dataset visualisation - before and after removal
+#### Dataset visualisation - before and after removal
 
 ```
 from collections import Counter        # for counting number of elements
@@ -388,6 +388,96 @@ plt.show()
 print('Original dataset shape:', Counter(y_train))  # original dataset
 print('Resampled dataset shape:', Counter(y_res))   # resampled dataset
 ```
+
+<img width="622" alt="image" src="https://github.com/user-attachments/assets/efa327eb-9bf7-47b4-b482-744ac0908430">
+
+*Original dataset shape: Counter({0: 227448, 1: 397})*
+*Resampled dataset shape: Counter({0: 227426, 1: 397})*
+
+
+### b. Random Forest
+#### Cross validation to find optimal model
+
+```
+from sklearn.ensemble import RandomForestClassifier                # for Random Forest model
+from sklearn.model_selection import StratifiedKFold, GridSearchCV  # for performing cross validation
+from sklearn.metrics import make_scorer, average_precision_score   # for computing AUPRC score
+```
+
+```
+## Define model
+rand_forest = RandomForestClassifier(class_weight = 'balanced', random_state = 112)
+
+## Define parameter grid for GridSearchCV
+param_grid = {
+    'max_depth': 2**np.array(range(1, 11), dtype = 'int'),
+    'min_samples_leaf': [1, 3, 5]
+}
+
+## Ensure each fold has similar class distribution
+cv = StratifiedKFold(n_splits = 3)
+
+## Define custom scoring for AUPRC
+auprc_scorer = make_scorer(average_precision_score, needs_proba = True)
+
+## Create GridSearchCV object
+grid_search = GridSearchCV(rand_forest, param_grid, cv = cv, scoring = auprc_scorer, n_jobs = -1)
+
+## Perform grid search
+grid_search.fit(X_res, y_res)
+
+## Print best score and corresponding parameters
+print('Best AUPRC score = %.2f' % grid_search.best_score_, 'achieved at the following parameters:')
+print(grid_search.best_params_)
+```
+
+*Best AUPRC score = 0.84 achieved at the following parameters:*
+*{'max_depth': 64, 'min_samples_leaf': 3}*
+
+
+#### Model training
+
+```
+best_rand_forest = grid_search.best_estimator_  # model with best parameters
+best_rand_forest.fit(X_res, y_res)
+```
+
+
+#### Model testing
+
+```
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, average_precision_score  # confusion matrix & AUPRC score
+```
+
+```
+## Prediction
+y_pred = best_rand_forest.predict(X_test_scaled)
+
+## Confusion matrix
+con_mat = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix = con_mat)
+disp.plot(cmap = plt.cm.Blues)
+plt.title('Confusion Matrix of Model 1')
+plt.show()
+
+## Categorical accuracy
+fraud_acc_model1 = con_mat[1, 1] / np.sum(con_mat, axis = 1)[1] * 100
+legit_acc_model1 = con_mat[0, 0] / np.sum(con_mat, axis = 1)[0] * 100
+print('Fraudulent accuracy = %.2f%%' % fraud_acc_model1)
+print('Genuine accuracy = %.2f%%' % legit_acc_model1)
+
+## AUPRC score
+y_pred_prob_model1 = best_rand_forest.predict_proba(X_test_scaled)[:, 1]  # probability for test set
+auprc_model1 = average_precision_score(y_test, y_pred_prob_model1)
+print('AUPRC score = %.2f' % auprc_model1)
+```
+
+
+
+
+
+
+
 
 
 
