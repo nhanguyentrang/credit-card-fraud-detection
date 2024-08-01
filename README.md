@@ -33,7 +33,7 @@ creditcard
 |284805|  172788.0| -0.240440|  0.530483|  0.702510|  0.689799| ... |  0.546668|  0.108821|  0.104533|   10.00|      0|
 |284806|  172792.0| -0.533413| -0.189733|  0.703337| -0.506271| ... | -0.818267| -0.002415|  0.013649|  217.00|      0|
 
-284807 rows × 31 columns
+*284807 rows × 31 columns*
 
 
 # 2. Data inspection
@@ -120,7 +120,7 @@ print('Fraud-to-non-fraud ratio = %.2f%%' % imbalance)
 
 <img width="598" alt="image" src="https://github.com/user-attachments/assets/466baa5e-956c-4bed-9cbe-24b0f1aeba78">
 
-Fraud-to-non-fraud ratio = 0.17%
+*Fraud-to-non-fraud ratio = 0.17%*
 
 
 ## 2.3. Multicollinearity
@@ -266,7 +266,7 @@ dw_stat = durbin_watson(linear.resid)
 print('Durbin-Watson statistic = %.2f' % dw_stat)
 ```
 
-Durbin-Watson statistic = 1.97
+*Durbin-Watson statistic = 1.97*
 
 Durbin-Watson statistic near 2 indicates little or no autocorrelation in the residuals. Therefore, the assumption of significance of observations is satisfied.
 
