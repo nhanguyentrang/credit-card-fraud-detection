@@ -758,6 +758,139 @@ plt.ylabel('Feature')
 plt.show()
 ```
 
+<img width="590" alt="image" src="https://github.com/user-attachments/assets/c5a8e7cf-4c0b-4857-8c15-ef34c7e13bae">
+
+
+#### Select feature importances
+
+```
+## Select top 15 important features
+importances_index = np.argsort(feature_importances)[-15:]
+X_train_importances = X_train_scaled.iloc[:, importances_index]
+X_test_importances = X_test_scaled.iloc[:, importances_index]
+```
+
+
+### b. DNN
+#### Transform data into tensors
+
+```
+import tensorflow as tf  # for tensor creation & DNN construction
+```
+
+```
+X_train_tensor = tf.constant(X_train_importances, dtype = tf.float32)
+X_test_tensor = tf.constant(X_test_importances, dtype = tf.float32)
+y_train_tensor = tf.constant(y_train.values, dtype = tf.float32)
+y_test_tensor = tf.constant(y_test.values, dtype = tf.float32)
+```
+
+
+#### Define model
+
+```
+import random  # for setting seed
+```
+
+```
+## Define custom loss function combining categorical loss and MAE
+def custom_loss(y_true, y_pred):
+    # calculate categorical loss
+    categorical_loss = tf.keras.losses.BinaryCrossentropy()(y_true, y_pred)
+    # calculate MAE loss
+    mae_loss = tf.keras.losses.MeanAbsoluteError()(y_true, y_pred)
+    # combine losses
+    combined_loss = categorical_loss + mae_loss
+    return combined_loss
+
+## For reproducibility
+def set_seed(seed = 112):
+    np.random.seed(seed)
+    tf.random.set_seed(seed)
+    random.seed(seed)
+
+## Define DNN model
+def DNN(X_train, y_train):
+    # set seed
+    set_seed()
+    # build structure
+    model = tf.keras.Sequential([
+        # layer 1
+        tf.keras.layers.Dense(128, input_shape = (X_train.shape[1],), activation = 'relu'),
+        # layer 2
+        tf.keras.layers.Dense(64, activation = 'relu'),
+        # layer 3
+        tf.keras.layers.Dense(32, activation = 'relu'),
+        # layer 4
+        tf.keras.layers.Dense(16, activation = 'relu'),
+        tf.keras.layers.Dense(1, activation = 'sigmoid')  # transform output into values between 0 and 1
+    ])
+    # compile model
+    optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001)
+    model.compile(optimizer = optimizer, loss = custom_loss, metrics = [tf.keras.metrics.AUC(name = 'auprc', curve = 'PR')])
+    # early stopping
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor = 'val_loss', patience = 10, restore_best_weights = True)
+    # learning rate scheduler
+    lr_scheduler = tf.keras.callbacks.ReduceLROnPlateau(monitor = 'val_loss', factor = 0.5, patience = 5, min_lr = 1e-6)
+    # calculate class weights
+    class_weight = {0: 1, 1: np.sum(y_train == 0) / np.sum(y_train == 1)}
+    # fit model
+    model.fit(X_train, y_train, epochs = 50, batch_size = 32, validation_split = 0.1,
+              callbacks = [early_stopping, lr_scheduler], class_weight = class_weight)
+    return model
+```
+
+
+#### Model training
+
+```
+## Train model
+dnn = DNN(X_train_tensor, y_train_tensor)
+
+## Check predictions range
+unique_predictions = np.unique(dnn.predict(X_test_tensor))
+print('Number of unique combined predictions:', len(unique_predictions))
+
+## Check if predictions are not all the same
+if len(unique_predictions) < 10:
+    print('Warning: The model predictions might be collapsing to a single value.')
+else:
+    print('Model predictions have a reasonable variance.')
+```
+
+*Number of unique combined predictions: 56740*
+
+*Model predictions have a reasonable variance.*
+
+
+#### Model testing
+
+```
+## Prediction
+y_pred_prob_model3 = dnn.predict(X_test_tensor).reshape(-1)  # ensure it's a row vector
+y_pred = (y_pred_prob_model3 >= 0.5).astype(int)             # convert probability into binary classification
+
+## Confusion matrix
+con_mat = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix = con_mat)
+disp.plot(cmap = plt.cm.Blues)
+plt.title('Confusion Matrix of Model 3')
+plt.show()
+
+## Categorical accuracy
+fraud_acc_model3 = con_mat[1, 1] / np.sum(con_mat, axis = 1)[1] * 100
+legit_acc_model3 = con_mat[0, 0] / np.sum(con_mat, axis = 1)[0] * 100
+print('Fraudulent accuracy = %.2f%%' % fraud_acc_model3)
+print('Genuine accuracy = %.2f%%' % legit_acc_model3)
+
+## AUPRC score
+auprc_model3 = average_precision_score(y_test, y_pred_prob_model3)
+print('AUPRC score = %.2f' % auprc_model3)
+```
+
+
+
+
 
 
 
