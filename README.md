@@ -678,6 +678,86 @@ auprc_model2 = average_precision_score(y_test, y_pred_prob_model2)
 print('AUPRC score = %.2f' % auprc_model2)
 ```
 
+<img width="513" alt="image" src="https://github.com/user-attachments/assets/3c624bf3-9f67-473e-a035-d0d9c8dae56d">
+
+*Fraudulent accuracy = 83.16%*
+
+*Genuine accuracy = 99.99%*
+
+*AUPRC score = 0.86*
+
+
+## 3.7. Model 3: Extra-Trees + DNN
+### a. Extra-Trees
+#### Cross validation to find optimal model
+
+```
+from sklearn.ensemble import ExtraTreesClassifier  # for Extra-Trees
+```
+
+```
+## Define model
+extra_trees = ExtraTreesClassifier(class_weight = 'balanced', random_state = 112)
+
+## Define parameter grid for GridSearchCV
+param_grid = {
+    'max_depth': 2**np.array(range(1, 11), dtype = 'int'),
+    'min_samples_leaf': [1, 3, 5]
+}
+
+## Ensure each fold has similar class distribution
+cv = StratifiedKFold(n_splits = 3)
+
+## Define custom scoring for AUPRC
+auprc_scorer = make_scorer(average_precision_score, needs_proba = True)
+
+## Create GridSearchCV object
+grid_search = GridSearchCV(extra_trees, param_grid, cv = cv, scoring = auprc_scorer, n_jobs = -1)
+
+## Perform grid search
+grid_search.fit(X_train_scaled, y_train)
+
+## Print best score and corresponding parameters
+print('Best AUPRC score = %.2f' % grid_search.best_score_, 'achieved at the following parameters:')
+print(grid_search.best_params_)
+```
+
+*Best AUPRC score = 0.85 achieved at the following parameters:*
+
+*{'max_depth': 64, 'min_samples_leaf': 1}*
+
+
+#### Model training
+
+```
+best_extra_trees = grid_search.best_estimator_  # model with best parameters
+best_extra_trees.fit(X_train_scaled, y_train)
+```
+
+
+#### Visualise feature importances
+
+```
+## Extract feature importances
+feature_importances = best_extra_trees.feature_importances_
+
+## Create a dataframe for visualisation
+importances_df = pd.DataFrame({
+    'Feature': X.columns,
+    'Importance': feature_importances
+})
+
+## Sort dataframe by importance
+importances_df = importances_df.sort_values(by = 'Importance', ascending = False)
+
+## Plot feature importances
+sns.barplot(x = 'Importance', y = 'Feature', data = importances_df, color = 'blue')
+plt.title('Feature Importances from Extra-Trees Classifier')
+plt.xlabel('Importance')
+plt.ylabel('Feature')
+plt.show()
+```
+
 
 
 
