@@ -279,9 +279,18 @@ plt.title('Residuals over Time')
 plt.show()
 ```
 
+<img width="546" alt="image" src="https://github.com/user-attachments/assets/52fcf886-72cb-40d6-b5d9-18548cc90d3a">
+
+The residuals distribute around zero line with no specific pattern, indicates no trend over time.
 
 
+### c. Autocorrelation plot
 
+```
+pd.plotting.autocorrelation_plot(linear.resid)
+plt.title('Autocorrelation Plot')
+plt.show()
+```
 
 
 
