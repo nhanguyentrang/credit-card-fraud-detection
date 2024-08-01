@@ -229,6 +229,56 @@ plt.tight_layout()
 plt.show()
 ```
 
+<img width="1114" alt="image" src="https://github.com/user-attachments/assets/bedad3e5-ce3c-4fb9-875f-33b0c711d3f2">
+
+
+
+# 3. Fraud detection models
+## 3.1. Variables extraction
+
+```
+X = creditcard.drop('Class', axis = 1)
+y = creditcard['Class']
+```
+
+
+## 3.2. Assumptions checking
+To check for independence of observations, assumption for Random Forest, XGBoost, and Extra-Trees.
+
+### a. Durbin-Watson test
+Results of Durbin-Watson test:
+* 0 to < 2: positive autocorrelation
+* Around 2: no autocorrelation
+* \> 2 to 4: negative autocorrelation
+
+```
+import statsmodels.api as sm                           # for OLS regression
+from statsmodels.stats.stattools import durbin_watson  # for Durbin-Watson test
+```
+
+```
+## Fit multiple linear regression model
+x = sm.add_constant(X)      # add constant term to predictor
+linear = sm.OLS(y, x).fit()
+
+## Durbin-Watson test
+dw_stat = durbin_watson(linear.resid)
+print('Durbin-Watson statistic = %.2f' % dw_stat)
+```
+
+Durbin-Watson statistic = 1.97
+
+Durbin-Watson statistic near 2 indicates little or no autocorrelation in the residuals. Therefore, the assumption of significance of observations is satisfied.
+
+
+### b. Residuals over Time plot
+
+```
+plt.plot(linear.resid)
+plt.title('Residuals over Time')
+plt.show()
+```
+
 
 
 
