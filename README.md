@@ -938,7 +938,30 @@ plt.tight_layout()
 plt.show()
 ```
 
+<img width="619" alt="image" src="https://github.com/user-attachments/assets/ee240c01-c738-4af8-a56a-1084a61ce267">
 
 
+## 4.2. Precision-recall curves
 
+```
+from sklearn.metrics import precision_recall_curve  # for plotting precision-recall curve
+```
+
+```
+## Prepare plot's features
+model_predictions = [y_pred_prob_model1, y_pred_prob_model2, y_pred_prob_model3]
+model_labels = ['Model 1', 'Model 2', 'Model 3']
+colors = ['blue', 'green', 'red']
+
+## Plot precision-recall curves
+for idx, (model_prob, label, color) in enumerate(zip(model_predictions, model_labels, colors)):
+    precision, recall, _ = precision_recall_curve(y_test, model_prob)
+    auprc = average_precision_score(y_test, model_prob)
+    plt.plot(recall, precision, lw = 2, color = color, label = f'{label} (AUPRC = {auprc:.2f})')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision-Recall Curves')
+plt.legend()
+plt.show()
+```
 
