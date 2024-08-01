@@ -70,7 +70,24 @@ plt.show()
 <img width="951" alt="image" src="https://github.com/user-attachments/assets/79e63b0c-f6bc-4d23-b3c6-7ce739d2f291">
 
 
+### b. Plot Time & Amount features
 
+```
+## Create a 1x2 grid of subplots for Time and Amount
+fig, axes = plt.subplots(1, 2, figsize = (16, 6))
+
+## Plot Time feature
+sns.boxplot(x = creditcard['Time'], ax = axes[0])
+axes[0].set_title('Time')
+
+## Plot Amount feature
+sns.boxplot(x = creditcard['Amount'], ax = axes[1])
+axes[1].set_title('Amount')
+
+## Show plots
+plt.tight_layout()
+plt.show()
+```
 
 
 
