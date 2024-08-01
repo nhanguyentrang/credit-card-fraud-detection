@@ -292,8 +292,102 @@ plt.title('Autocorrelation Plot')
 plt.show()
 ```
 
+<img width="577" alt="image" src="https://github.com/user-attachments/assets/b25701b8-a3cd-4c37-9b34-26012ad7beec">
+
+The plot shows no positive or negative autocorrelation for all lags.
 
 
+## 3.3. Train-test split
+
+```
+from sklearn.model_selection import train_test_split  # for splitting data
+```
+
+```
+## Train-test split with ratio 8:2
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 112)
+```
+
+
+## 3.4. Data normalisation
+
+```
+from sklearn.preprocessing import StandardScaler  # for z-score standardisation
+```
+
+```
+## Fit scaler on training data
+scaler = StandardScaler()
+scaler.fit(X_train)
+
+## Standardise both training and testing sets
+X_train_scaled = scaler.transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+## Transform data from array back to dataframe
+X_train_scaled = pd.DataFrame(X_train_scaled, columns = X.columns)
+X_test_scaled = pd.DataFrame(X_test_scaled, columns = X.columns)
+```
+
+
+## 3.5. Model 1: Tomek link removal + Random Forest
+### a. Tomek link removal
+#### Resample dataset
+
+```
+from imblearn.under_sampling import TomekLinks  # for Tomek link removal
+```
+
+```
+## Create TomekLinks object
+tomeklink = TomekLinks(sampling_strategy = 'majority')  # remove only majority class
+
+## Resample the dataset
+X_res, y_res = tomeklink.fit_resample(X_train_scaled, y_train)
+```
+
+
+## Dataset visualisation - before and after removal
+
+```
+from collections import Counter        # for counting number of elements
+from sklearn.decomposition import PCA  # for reducing data dimensions
+```
+
+```
+## Original dataset visualisation
+# perform PCA for visualization purpose
+pca = PCA(n_components = 2)
+X_train_pca = pca.fit_transform(X_train_scaled)
+# determine which data points to be removed
+remove_index = np.setdiff1d(np.arange(len(X_train_scaled)), tomeklink.sample_indices_)
+# create scatter plot for the original dataset
+plt.subplot(1, 2, 1)
+plt.scatter(X_train_pca[:, 0], X_train_pca[:, 1], color = 'blue', alpha = 0.5, label = 'Original Data')
+plt.scatter(X_train_pca[remove_index, 0], X_train_pca[remove_index, 1], color = 'red', label = 'Points to be Removed')
+plt.title('Original Dataset')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.legend()
+
+## Resampled dataset visualisation
+# perform PCA for visualization purpose
+X_res_pca = pca.transform(X_res)
+# create scatter plot for the resampled dataset
+plt.subplot(1, 2, 2)
+plt.scatter(X_res_pca[:, 0], X_res_pca[:, 1], color = 'blue', alpha = 0.5)
+plt.title('Resampled Dataset')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+
+## Show plots
+plt.tight_layout()
+plt.show()
+
+## Class distribution
+print('Original dataset shape:', Counter(y_train))  # original dataset
+print('Resampled dataset shape:', Counter(y_res))   # resampled dataset
+```
 
 
 
