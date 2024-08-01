@@ -188,7 +188,18 @@ plt.ylabel('Time (in seconds)')
 plt.show()
 ```
 
+<img width="584" alt="image" src="https://github.com/user-attachments/assets/29225dc2-0ba1-448f-9c2f-4b1b82ec86f0">
 
+
+## 2.6. Amount distribution
+
+```
+sns.histplot(creditcard['Amount'], bins = 30, kde = True, color = 'blue', edgecolor = 'black', stat = 'count')
+plt.xlabel('Transaction amount (in Euro)')
+plt.ylabel('Number of transactions')
+plt.title('Transaction Amount Distribution')
+plt.show()
+```
 
 
 
