@@ -170,8 +170,7 @@ plt.show()
 ## 2.4. Time distribution
 
 ```
-sns.histplot(creditcard['Time'], bins = 30, kde = True,
-             color = 'blue', edgecolor = 'black', stat = 'count')
+sns.histplot(creditcard['Time'], bins = 30, kde = True, color = 'blue', edgecolor = 'black', stat = 'count')
 plt.xlabel('Time (in seconds)')
 plt.ylabel('Number of transactions')
 plt.title('Time Distribution')
